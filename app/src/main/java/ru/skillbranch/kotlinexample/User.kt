@@ -68,7 +68,7 @@ class User private constructor(
 
         val normal = rawPhone?.replace("[^+\\d]".toRegex(),"")?:""
         if(((normal.length == 12) && (normal[0]=='+') && (normal.count{it == '+'}==1)).not()) {
-            throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
+            throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits $normal")
         }
 
         requestAccessCode()
