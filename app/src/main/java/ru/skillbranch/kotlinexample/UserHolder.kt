@@ -24,6 +24,7 @@ object UserHolder {
 
     fun registerUserByPhone(fullName: String, rawPhone: String): User {
         if(map[rawPhone.phoneToLogin()]!=null){throw IllegalArgumentException("A user with this phone already exists")}
+        //IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
 
         return User.makeUser(fullName = fullName, phone = rawPhone)
             .also { user ->  map[user.login] = user}
@@ -31,7 +32,7 @@ object UserHolder {
 
     fun importUsers(list:List<String>):List<User>{
         return list.map {
-            User.importUser(it)
+            User.importUser(it).also { user -> map[user.login] = user }
         }
     }
 

@@ -24,7 +24,12 @@ class User private constructor(
 
     private var phone:String? = null
         set(value){
-            field = value?.replace("[^+\\d]".toRegex(),"")
+            value?:return
+            val normal = value.replace("[^+\\d]".toRegex(),"")
+            if(((normal.length == 12) && (normal[0]=='+') && (normal.count{it == '+'}==1)).not()) {
+                throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
+            }
+            field = normal
         }
 
 
@@ -65,11 +70,6 @@ class User private constructor(
                 lastName: String?,
                 rawPhone: String?):this (firstName, lastName, rawPhone = rawPhone, meta = mapOf("auth" to "sms")) {
         println("Secondary phone constructor")
-
-        val normal = rawPhone?.replace("[^+\\d]".toRegex(),"")?:""
-        if(((normal.length == 12) && (normal[0]=='+') && (normal.count{it == '+'}==1)).not()) {
-            throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits $normal")
-        }
 
         requestAccessCode()
     }
@@ -155,7 +155,8 @@ class User private constructor(
             val mail = if(splittedData[1].isBlank()) null else splittedData[1]
             val phone = if(splittedData[3].isBlank()) null else splittedData[3]
             val sequrity = splittedData[2].split(":").run{first() to last()}
-            val meta = mapOf("auth" to if(mail.isNullOrBlank().not()) "password" else "sms", "src" to "csv")
+            //val meta = mapOf("auth" to if(mail.isNullOrBlank().not()) "password" else "sms", "src" to "csv")
+            val meta = mapOf("src" to "csv")
 
             return when{
                 mail.isNullOrBlank() && phone.isNullOrBlank() -> throw IllegalArgumentException("Email or phone must be not null or blank")
