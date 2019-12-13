@@ -24,12 +24,7 @@ class User private constructor(
 
     private var phone:String? = null
         set(value){
-            value?:return
-            val normal = value.replace("[^+\\d]".toRegex(),"")
-            if(((normal.length == 12) && (normal[0]=='+') && (normal.count{it == '+'}==1)).not()) {
-                throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
-            }
-            field = normal
+            field = value?.replace("[^+\\d]".toRegex(),"")
         }
 
 
@@ -70,6 +65,12 @@ class User private constructor(
                 lastName: String?,
                 rawPhone: String?):this (firstName, lastName, rawPhone = rawPhone, meta = mapOf("auth" to "sms")) {
         println("Secondary phone constructor")
+
+        val normal = rawPhone?.replace("[^+\\d]".toRegex(),"")?:""
+        if(((normal.length == 12) && (normal[0]=='+') && (normal.count{it == '+'}==1)).not()) {
+            throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
+        }
+
         requestAccessCode()
     }
 
