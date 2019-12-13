@@ -149,17 +149,17 @@ class User private constructor(
         }
 
         fun importUser(userData:String):User {
-            //Полное имя пользователя;
-            // email;
-            // соль:хеш пароля;
-            // телефон (Пример: " John Doe ;JohnDoe@unknow.com;[B@7591083d:c6adb4becdc64e92857e1e2a0fd6af84;;)
             val splittedData = userData.split(";")
             val (firstName, lastName) = splittedData[0].fullNameToPair()
-            val mail = splittedData[1]
-            val phone = splittedData[3]
+            val mail = if(splittedData[1].isBlank()) null else splittedData[1]
+            val phone = if(splittedData[3].isBlank()) null else splittedData[3]
             val sequrity = splittedData[2].split(":").run{first() to last()}
-            val meta = mapOf("auth" to if(mail.isNotBlank()) "password" else "sms")
-            return User(firstName, lastName, mail, phone, sequrity, meta)
+            val meta = mapOf("auth" to if(mail.isNullOrBlank().not()) "password" else "sms", "src" to "csv")
+
+            return when{
+                mail.isNullOrBlank() && phone.isNullOrBlank() -> throw IllegalArgumentException("Email or phone must be not null or blank")
+                else -> User(firstName, lastName, mail, phone, sequrity, meta)
+            }
         }
 
         private fun String.fullNameToPair():Pair<String, String?>{
